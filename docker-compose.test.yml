@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  test-redis:
+    image: redis:6-alpine
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts with main redis
+
+  tests:
+    build: .
+    command: pytest -v
+    environment:
+      - SQL_QUERY_MANAGER_SECRET_KEY=test-key
+      - DATABASE_URL="sqlite:///:memory:"
+      - REDIS_HOST=test-redis
+      - REDIS_PORT=6379
+    depends_on:
+      - test-redis
